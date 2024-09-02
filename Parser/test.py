@@ -18,6 +18,7 @@ class Driver:
         self.name = driver_info[1]
         self.skill_set = self.skillSetUp(driver_info[2:], skill_set)
         self.responsible_task = self.responsibleSetUp(driver_info);
+        self.last_work_time = None
 
     def skillSetUp(self, skill_info, skill_set):
         skill_dict = {}
@@ -40,11 +41,11 @@ class Driver:
         
         # check if the driver is available on the given date
         return True
-        
-        
+    
+       
 
 
-def skillExcelToClass(filename):
+def driverInitialise(filename):
     # Check if the file exists in the current directory
     file_path = os.path.join(os.getcwd(), filename)
 
@@ -89,7 +90,7 @@ def roasterExcelToClass(filename):
 
 
 def main():
-    skillExcelToClass("skill_M.xlsx")
+    driverInitialise("skill_M.xlsx")
     # roasterExcelToClass("roaster_M.xlsx")
 
 
