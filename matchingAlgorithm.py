@@ -31,17 +31,17 @@ def createBipartiteGraph():
         graph[employee] = {}
         graph[SOURCE][employee] = 1
 
-    for role, _ in dailyRoles:
+    for role, _ in dailyRoles.items():
         graph[role] = {}
         graph[role][SINK] = 1
     
     for employee in availableEmplyees:
-        for role, tasks in dailyRoles:
+        for role, tasks in dailyRoles.items():
             if elegible(employee, tasks):
                 graph[employee][role] = 1 * getPriority(tasks)
                 graph[role][employee] = 0
 
     return graph
 
-for employeeCapability in createBipartiteGraph():
+for employeeCapability in createBipartiteGraph().items():
     print(employeeCapability)
