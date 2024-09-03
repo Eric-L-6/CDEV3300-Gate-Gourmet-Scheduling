@@ -1,9 +1,12 @@
 from datetime import datetime, timedelta
 from scipy.sparse import csr_matrix
 from scipy.sparse.csgraph import maximum_bipartite_matching
+from Helpers.drivers import Driver
+from Helpers.shifts import Shift
+from typing import Dict, List, Set, Union
 
 class MaxBipartiteGraphSolver:
-    def __init__(self, all_employees: dict, available_employees: list, shifts: list):
+    def __init__(self, all_employees: Dict[int, Driver], available_employees: List[int], shifts: List[Shift]):
         self.shifts = shifts
         self.available_employees = available_employees
         self.all_employees = all_employees
@@ -11,7 +14,7 @@ class MaxBipartiteGraphSolver:
         self.graph = self.createBipartiteGraph(available_employees, shifts)
         self.csr_graph = csr_matrix(self.graph)
 
-    def solve(self):
+    def solve(self) -> Dict[int, Union[int, List[int]]]:
         max_matching = maximum_bipartite_matching(self.csr_graph, perm_type='row') # match by shift
 
         result = {}
@@ -24,7 +27,7 @@ class MaxBipartiteGraphSolver:
             result[self.shifts[s_index].id] = match
         return result
     
-    def createBipartiteGraph(self, employees, shifts):
+    def createBipartiteGraph(self, employees: List[int], shifts: List[Shift]) -> List[List[int]]:
         graph = [[0 for _ in range(len(shifts))] for _ in range(len(employees))] 
 
         for e_index, e_id in enumerate(employees):
@@ -34,7 +37,7 @@ class MaxBipartiteGraphSolver:
 
         return graph
     
-    def elegible(self, e_id: int, shift: Shift):
+    def elegible(self, e_id: int, shift: Shift) -> bool:
         employee = self.all_employees[e_id]
 
         # employee last worked within 12 hours
@@ -49,38 +52,46 @@ class MaxBipartiteGraphSolver:
     
         return True
 
-    def findElegibleOffEmployees(self, shift):
+    def findElegibleOffEmployees(self, shift: Shift) -> List[int]:
         # TODO future sort output based on least amount of overtime
         return [e_id for e_id in self.off_employees if self.elegible(e_id, shift)]
 
-    def getOffEmployees(self):
+    def getOffEmployees(self) -> Set[int]:
         return set(self.all_employees.keys()) - set(self.available_employees)
 
-    def print_graph(self):
+    def print_graph(self) -> None:
         for row in self.graph:
             print(row)
 
+
+# outputs
+# {shiftId: driverId}
+# all_employees = {1, 2, 3, 4}
+# available_employees = [1, 4]
+# shifts = [s1, s2, s3]
+# output = {s1.id: e1.id, s2: e4.id, s3.id: [e2.id, e3.id]}
+
 if __name__ == '__main__':
-    class Driver:
+    class _Driver:
         def __init__(self, id: int, skill_set: set, last_work_time: datetime = None):
             self.id = id
             self.skill_set = skill_set
             self.last_work_time = last_work_time
 
-    class Shift:
+    class _Shift:
         def __init__(self, id: int, tasks: set, start_time: datetime = None):
             self.id = id
             self.tasks = tasks
             self.start_time = start_time
 
-    e1 = Driver(1, {'a', 'b'})
-    e2 = Driver(2, {'a'})
-    e3 = Driver(3, {'b'})
-    e4 = Driver(4, {'a', 'b', 'c'})
+    e1 = _Driver(1, {'a', 'b'})
+    e2 = _Driver(2, {'a'})
+    e3 = _Driver(3, {'b'})
+    e4 = _Driver(4, {'a', 'b', 'c'})
 
-    s1 = Shift(1, {'a'})
-    s2 = Shift(2, {'a', 'b'})
-    s3 = Shift(3, {'a', 'c'})
+    s1 = _Shift(1, {'a'})
+    s2 = _Shift(2, {'a', 'b'})
+    s3 = _Shift(3, {'a', 'c'})
 
     # inputs
     all_employees = {1: e1, 2: e2, 3: e3, 4: e4} # e_id: driver
@@ -92,11 +103,4 @@ if __name__ == '__main__':
     print("max matching")
     print(bg.solve())
 
-
-# outputs
-# {shiftId: driverId}
-# all_employees = {1, 2, 3, 4}
-# available_employees = [1, 4]
-# shifts = [s1, s2, s3]
-# output = {s1.id: e1.id, s2: e4.id, s3.id: [e2.id, e3.id]}
 
