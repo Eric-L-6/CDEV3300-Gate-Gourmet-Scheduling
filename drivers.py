@@ -57,7 +57,7 @@ class DriverMaker:
             for i in range(0, len(df.columns)):
                 index_column_table.append((df.columns[i]))
             skill_set = df.columns[offset: offset + num_skill].tolist()
-            for i in range(1, len(df)):
+            for i in range(0, len(df)):
                 # skip if the first column is empty
                 if pd.isnull(df.iloc[i, 0]):
                     continue
