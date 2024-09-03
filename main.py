@@ -6,26 +6,18 @@ import os
 ##################################################################
 ########################## Helpers ###############################
 
-def isValidDate(date_string):
-    try:
-        # Try to parse the date string in DD-MM-YYYY format
-        datetime.strptime(date_string, '%d-%m-%Y')
-        return True
-    except ValueError:
-        # If parsing fails, it's not in the correct format or an invalid date
+def validWeeklyTemplateDir(daily_schedule_folder: str) -> bool:
+    if not daily_schedule_folder:
+        messagebox.showwarning("Selection Error", "Please select a folder from the dropdown.")
         return False
 
-def validateDateEntry(date_entry: str) -> bool:
-    if not date_entry:
-        messagebox.showwarning("Input Error", "Please enter a date.")
-        return False
-    
-    if not isValidDate(date_entry):
-        messagebox.showwarning("Input Error", "Please enter the date in (DD-MM-YYYY) format")
-        return False
-    
-    # if date not found - invalid date entry
+    return True
 
+def validMonthlyRoster(monthly_roster: str) -> bool:
+    if not monthly_roster:
+        messagebox.showwarning("Selection Error", "Please select a file from the dropdown.")
+        return False
+    
     return True
 
 ##################################################################
@@ -35,55 +27,60 @@ if __name__ == '__main__':
     
     # Function to handle onSubmit
     def onSubmit():
-        daily_schedule_folder = folder_combobox.get()
-        date_input = date_entry.get()
         
-        # Validate date input format (simple example, more validation may be needed)
-        validateDateEntry(date_input)
+        monthly_roster = file_combobox.get()
+        weekly_template_dir = folder_combobox.get()
+        
+        if not validWeeklyTemplateDir(weekly_template_dir):
+            return
+        
+        if not validMonthlyRoster(monthly_roster):
+            return
 
-        if not isValidDate(date_input):
-            messagebox.showwarning("Input Error", "Please enter a date.")
-            return
-        if not daily_schedule_folder:
-            messagebox.showwarning("Selection Error", "Please select a folder from the dropdown.")
-            return
-        
-        # Show the selected date and folder
-        messagebox.showinfo("Selection", f"Selected Date: {date_input}\nSelected Folder: {selected_folder}")
+        # TODO process the selection
+        messagebox.showinfo("Selection", f"Selected roster: {monthly_roster}\nSelected template: {weekly_template_dir}")
 
     # Create the main application window
     root = tk.Tk()
     root.title("Shift Scheduler")
     root.geometry("400x200")
 
-    # Date input label and entry
-    date_label = tk.Label(root, text="Enter Date to schedule (DD-MM-YYYY):")
-    date_label.pack(pady=10)
-    date_entry = tk.Entry(root, width=20)
-    date_entry.pack(pady=5)
+    # Get the absolute input path
+    inputs_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "Inputs")
+
+    # File selection label and Combobox
+    file_label = tk.Label(root, text="Select the monthly roster:")
+    file_label.pack(pady=10)
+
+    # Create a Combobox to display xlsx file names
+    file_combobox = ttk.Combobox(root, width=38, state="readonly")
+
+    # relative path for monthly roster
+    monthlyRosterPath = os.path.join(inputs_path, "MonthlyRosters")
+
+    # Check if the path exists and populate the Combobox with xlsx files
+    if os.path.exists(monthlyRosterPath) and os.path.isdir(monthlyRosterPath):
+        files = [f for f in os.listdir(monthlyRosterPath) if f.endswith('.xlsx')]
+        file_combobox['values'] = files
+    else:
+        file_combobox['values'] = ["No rosters found"]
+    file_combobox.pack(pady=5)
 
     # Folder selection label and Combobox
-    folder_label = tk.Label(root, text="Please select :")
+    folder_label = tk.Label(root, text="Please select the weekly template:")
     folder_label.pack(pady=10)
-
-    # Define the relative path to search for folders
-    relative_path = 'Inputs\\DailyScheduleTemplates'  # Change this to your desired relative path
-
-    # Get the directory where the script is located
-    script_directory = os.path.dirname(os.path.abspath(__file__))
-
-    # Get the absolute path from the relative path
-    absolute_path = os.path.join(script_directory, relative_path)
 
     # Create a Combobox to display folder names
     folder_combobox = ttk.Combobox(root, width=38, state="readonly")
 
+    weeklyTemplatesPath = os.path.join(inputs_path, "WeeklyTemplates")
+
     # Check if the path exists and populate the Combobox with folders
-    if os.path.exists(absolute_path) and os.path.isdir(absolute_path):
-        folders = [f for f in os.listdir(absolute_path) if os.path.isdir(os.path.join(absolute_path, f))]
+    if os.path.exists(weeklyTemplatesPath) and os.path.isdir(weeklyTemplatesPath):
+        folders = [f for f in os.listdir(weeklyTemplatesPath) if os.path.isdir(os.path.join(weeklyTemplatesPath, f))]
         folder_combobox['values'] = folders
     else:
-        folder_combobox['values'] = ["No folders found"]
+        folder_combobox['values'] = ["No templates found"]
     folder_combobox.pack(pady=5)
 
     # Button to confirm selection
