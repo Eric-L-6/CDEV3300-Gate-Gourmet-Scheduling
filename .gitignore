@@ -1,1 +1,6 @@
-.venv
+myenv/
+.venv/
+__pycache__/
+~$daily_M.xlsx
+~$roaster_v2.xlsx
+~$skill_M.xlsx
