@@ -3,6 +3,11 @@ import openpyxl
 from datetime import datetime
 
 class Shift:
+    # id: int
+    # start_time: datetime
+    # end_time: datetime
+    # task_requirement: list of string
+
     def __init__(self, id, start_time, end_time, task_requirement):
         self.id = id
         self.start_time = start_time
