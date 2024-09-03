@@ -1,6 +1,6 @@
 from Parser.driverParser import DriverParser
 from Parser.shiftParser import ShiftParser
-from Parser.roasterParser import RoasterParser
+from Parser.rosterParser import RosterParser
 from datetime import datetime
 
 class ParserController:
@@ -15,8 +15,7 @@ class ParserController:
         return employees
     
     def getAvailableEmployees(self, date:datetime):
-        available_employees = []
-        rp = RoasterParser()
+        rp = RosterParser()
         return rp.getAvailableDrivers(datetime(2024, 9, 30), self.drivers)
     
     def getShifts(self):

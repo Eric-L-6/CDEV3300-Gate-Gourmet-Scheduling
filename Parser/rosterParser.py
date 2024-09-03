@@ -2,14 +2,14 @@ from openpyxl import load_workbook
 from openpyxl.styles import PatternFill
 from datetime import datetime
 import os
-class RoasterParser():
+class RosterParser():
 
     unavailable_slot = "FFFF0000"
 
     # Function to access a cell based on row and column
     def getCellInfo(self, row, col):
         # Load the workbook and select the active sheet
-        workbook_path = os.path.join(os.getcwd(), "Input Data/roaster_v2.xlsx" ) # Replace with your Excel file path
+        workbook_path = os.path.join(os.getcwd(), "Input Data/roster_v2.xlsx" ) # Replace with your Excel file path
         wb = load_workbook(workbook_path)
         ws = wb.active
 
@@ -33,7 +33,7 @@ class RoasterParser():
     # - Returns a list of available drivers based on the date
     def getAvailableDrivers(self, date:datetime, drivers:list):
         # Load the workbook and select the active sheet
-        workbook_path = os.path.join(os.getcwd(),"Input Data/roaster_v2.xlsx")
+        workbook_path = os.path.join(os.getcwd(),"Input Data/roster_v2.xlsx")
         wb = load_workbook(workbook_path)
         ws = wb.active
 

@@ -7,9 +7,7 @@ offset = 2
 index_column_table = []
 
 class DriverParser():
-    def driverInitialise(filename:str):
-        # Check if the file exists in the current directory
-        file_path = os.path.join(os.getcwd(), "Input Data",filename)
+    def driverInitialise(file_path: str):
         drivers = []
 
         if not os.path.isfile(file_path):
@@ -34,6 +32,6 @@ class DriverParser():
         return drivers
 
 if __name__ == "__main__":
-    drivers = DriverParser.driverInitialise("skill_M.xlsx")
+    drivers = DriverParser.driverInitialise(os.path.join(os.getcwd(), "Input Data", "skill_M.xlsx"))
     for driver in drivers:
         print(driver)

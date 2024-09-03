@@ -1,21 +1,22 @@
 from tkinter import ttk, messagebox
-from datetime import datetime
+from controller import Controller
 import tkinter as tk
 import os
+from constants import INPUT_PATH, MONTHLY_ROSTERS_PATH, WEEKLY_TEMPLATES_PATH
 
 ##################################################################
 ########################## Helpers ###############################
 
-def validWeeklyTemplateDir(daily_schedule_folder: str) -> bool:
-    if not daily_schedule_folder:
-        messagebox.showwarning("Selection Error", "Please select a folder from the dropdown.")
+def validWeeklyTemplateDir(weekly_template_dir: str) -> bool:
+    if not weekly_template_dir:
+        messagebox.showwarning("Selection Error", "Please select a weekly template from the dropdown.")
         return False
 
     return True
 
 def validMonthlyRoster(monthly_roster: str) -> bool:
     if not monthly_roster:
-        messagebox.showwarning("Selection Error", "Please select a file from the dropdown.")
+        messagebox.showwarning("Selection Error", "Please select a monthly roster from the dropdown.")
         return False
     
     return True
@@ -27,7 +28,6 @@ if __name__ == '__main__':
     
     # Function to handle onSubmit
     def onSubmit():
-        
         monthly_roster = file_combobox.get()
         weekly_template_dir = folder_combobox.get()
         
@@ -38,15 +38,15 @@ if __name__ == '__main__':
             return
 
         # TODO process the selection
+        controller = Controller(monthly_roster, weekly_template_dir)
+        controller.process();
         messagebox.showinfo("Selection", f"Selected roster: {monthly_roster}\nSelected template: {weekly_template_dir}")
+        root.destroy()
 
     # Create the main application window
     root = tk.Tk()
     root.title("Shift Scheduler")
     root.geometry("400x200")
-
-    # Get the absolute input path
-    inputs_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "Inputs")
 
     # File selection label and Combobox
     file_label = tk.Label(root, text="Select the monthly roster:")
@@ -55,12 +55,9 @@ if __name__ == '__main__':
     # Create a Combobox to display xlsx file names
     file_combobox = ttk.Combobox(root, width=38, state="readonly")
 
-    # relative path for monthly roster
-    monthlyRosterPath = os.path.join(inputs_path, "MonthlyRosters")
-
     # Check if the path exists and populate the Combobox with xlsx files
-    if os.path.exists(monthlyRosterPath) and os.path.isdir(monthlyRosterPath):
-        files = [f for f in os.listdir(monthlyRosterPath) if f.endswith('.xlsx')]
+    if os.path.exists(MONTHLY_ROSTERS_PATH) and os.path.isdir(MONTHLY_ROSTERS_PATH):
+        files = [f for f in os.listdir(MONTHLY_ROSTERS_PATH) if f.endswith('.xlsx')]
         file_combobox['values'] = files
     else:
         file_combobox['values'] = ["No rosters found"]
@@ -73,11 +70,9 @@ if __name__ == '__main__':
     # Create a Combobox to display folder names
     folder_combobox = ttk.Combobox(root, width=38, state="readonly")
 
-    weeklyTemplatesPath = os.path.join(inputs_path, "WeeklyTemplates")
-
     # Check if the path exists and populate the Combobox with folders
-    if os.path.exists(weeklyTemplatesPath) and os.path.isdir(weeklyTemplatesPath):
-        folders = [f for f in os.listdir(weeklyTemplatesPath) if os.path.isdir(os.path.join(weeklyTemplatesPath, f))]
+    if os.path.exists(WEEKLY_TEMPLATES_PATH) and os.path.isdir(WEEKLY_TEMPLATES_PATH):
+        folders = [f for f in os.listdir(WEEKLY_TEMPLATES_PATH) if os.path.isdir(os.path.join(WEEKLY_TEMPLATES_PATH, f))]
         folder_combobox['values'] = folders
     else:
         folder_combobox['values'] = ["No templates found"]
