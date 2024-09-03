@@ -2,15 +2,6 @@ from datetime import datetime, timedelta
 from scipy.sparse import csr_matrix
 from scipy.sparse.csgraph import maximum_bipartite_matching
 
-
-# outputs
-# {shiftId: driverId}
-# all_employees = {1, 2, 3, 4}
-# available_employees = [1, 4]
-# shifts = [s1, s2, s3]
-# output = {s1.id: e1.id, s2: e4.id, s3.id: [e2.id, e3.id]}
-
-
 class MaxBipartiteGraphSolver:
     def __init__(self, all_employees: dict, available_employees: list, shifts: list):
         self.shifts = shifts
@@ -70,7 +61,6 @@ class MaxBipartiteGraphSolver:
             print(row)
 
 if __name__ == '__main__':
-
     class Driver:
         def __init__(self, id: int, skill_set: set, last_work_time: datetime = None):
             self.id = id
@@ -101,3 +91,12 @@ if __name__ == '__main__':
     bg.print_graph()
     print("max matching")
     print(bg.solve())
+
+
+# outputs
+# {shiftId: driverId}
+# all_employees = {1, 2, 3, 4}
+# available_employees = [1, 4]
+# shifts = [s1, s2, s3]
+# output = {s1.id: e1.id, s2: e4.id, s3.id: [e2.id, e3.id]}
+
