@@ -1,105 +1,101 @@
-# After parsing: Will have:
-# A skills matrix for all employees
-# A list of available employees
-# A list of shifts and required
-import numpy as np 
-from collections import deque
+from datetime import datetime, timedelta
 from scipy.sparse import csr_matrix
 from scipy.sparse.csgraph import maximum_bipartite_matching
 
-
 class Driver:
-    def __init__(self, id):
+    def __init__(self, id: int, skill_set: set, last_work_time: datetime = None):
         self.id = id
-        self.skill_set = set({"one", "two"})
+        self.skill_set = skill_set
+        self.last_work_time = last_work_time
 
 class Shift:
-    def __init__(self, id):
+    def __init__(self, id: int, tasks: set, start_time: datetime = None):
         self.id = id
+        self.tasks = tasks
+        self.start_time = start_time
 
-e1 = Driver(1)
-e2 = Driver(2)
-e3 = Driver(3)
-e4 = Driver(4)
+e1 = Driver(1, {'a', 'b'})
+e2 = Driver(2, {'a'})
+e3 = Driver(3, {'b'})
+e4 = Driver(4, {'a', 'b', 'c'})
 
-s1 = Shift(1)
-s2 = Shift(2)
-s3 = Shift(3)
+s1 = Shift(1, {'a'})
+s2 = Shift(2, {'a', 'b'})
+s3 = Shift(3, {'a', 'c'})
 
 # inputs
-employees = {1: e1, 2: e2, 3: e3, 4: e4}
-available_employees = [1, 4]
+all_employees = {1: e1, 2: e2, 3: e3, 4: e4}
+available_employees = [2, 3]
 shifts = [s1, s2, s3]
 
 # outputs
 # {shiftId: driverId}
-result = {s1.id: e1.id, s2: e4.id, s3.id: [e2.id, e3.id]}
+# all_employees = {1, 2, 3, 4}
+# available_employees = [1, 4]
+# shifts = [s1, s2, s3]
+# output = {s1.id: e1.id, s2: e4.id, s3.id: [e2.id, e3.id]}
 
 
+class MaxBipartiteGraphSolver:
+    def __init__(self, all_employees: dict, available_employees: list, shifts: list):
+        self.shifts = shifts
+        self.available_employees = available_employees
+        self.all_employees = all_employees
+        self.off_employees = self.getOffEmployees()
+        self.graph = self.createBipartiteGraph(available_employees, shifts)
+        self.csr_graph = csr_matrix(self.graph)
 
-# potentially: Precalculate the priority of each shift???
-# based on how many employees can perform the shift
-# OR based on how many available employees cna perform the shift?????????????????????
+    def solve(self):
+        max_matching = maximum_bipartite_matching(self.csr_graph, perm_type='row') # match by shift
 
+        result = {}
+        for s_index, e_index in enumerate(max_matching):
+            if e_index == -1:
+                match = self.findElegibleOffEmployees(self.shifts[s_index])
+            else:
+                match = self.available_employees[e_index]
 
-
-class BipartiteGraph:
-    def __init__(self, available_employees, shifts):
-        self.graph_csr = self.createCSRBipartiteGraph(available_employees, shifts)
-
-    def elegible(employee, tasks):
-        for task in tasks:
-            if task in employee.skill_set:
-                return True
+            result[self.shifts[s_index].id] = match
+        return result
     
-        return False
+    def createBipartiteGraph(self, employees, shifts):
+        graph = [[0 for _ in range(len(shifts))] for _ in range(len(employees))] 
 
-    def createBipartiteGraph(self, available_employees, shifts):
-        graph = [[0 for _ in range(len(shifts))] for _ in range(len(available_employees))] 
-
-        for e_index, e_id in enumerate(available_employees):
+        for e_index, e_id in enumerate(employees):
             for s_index, shift in enumerate(shifts):
-                if self.elegible(employees[e_id], shift):
+                if self.elegible(e_id, shift):
                     graph[e_index][s_index] = 1
 
         return graph
+    
+    def elegible(self, e_id: int, shift: Shift):
+        employee = self.all_employees[e_id]
 
-# need the edmonds karp algorithm
-def edmonds_karp(graph):
-    parent = {}
-    shift_match = [None for _ in range(len(dailyShift))]
+        # employee last worked within 12 hours
+        if employee.last_work_time is not None:
+            if employee.last_work_time - timedelta(hours=12) <= shift.start_time:
+                return False
 
-    def bfs(graph):
-        visited = set()
-        queue = deque([SOURCE])
-        visited.add(SOURCE)
+        # employee lacks required skills for shift
+        for task in shift.tasks:
+            if task not in employee.skill_set:
+                return False
+    
+        return True
 
-        while queue:
-            node = queue.popleft()
+    def findElegibleOffEmployees(self, shift):
+        # TODO future sort output based on least amount of overtime
+        return [e_id for e_id in self.off_employees if self.elegible(e_id, shift)]
 
-            print(f"visiting {node}")
+    def getOffEmployees(self):
+        return set(self.all_employees.keys()) - set(self.available_employees)
 
-            for neighbhor in graph[node]:
-                if neighbhor not in visited and graph[node][neighbhor] > 0: # residual capacity
-                    queue.append(neighbhor)
+    def print_graph(self):
+        for row in self.graph:
+            print(row)
 
-    def bfs_prioritised(graph):
-        visited = set()
-        queue = deque([SOURCE])
-
-        while queue:
-            node = queue.popleft()
-
-            if node in visited:
-                continue
-
-            visited.add(node)
-            print(f"visiting {node}")
-
-            for neighbhor in sorted(graph[node].items(), key=lambda item: item[1]):
-                queue.append(neighbhor)
-
-edmonds_karp(createBipartiteGraph()).bfs()
-
-for employeeCapability in createBipartiteGraph().items():
-    print(employeeCapability)
+if __name__ == '__main__':
+    bg = MaxBipartiteGraphSolver(all_employees, available_employees, shifts)
+    bg.print_graph()
+    print("max matching")
+    print(bg.solve())
