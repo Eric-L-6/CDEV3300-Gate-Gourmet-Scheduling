@@ -40,7 +40,7 @@ class Driver:
 
 def driverInitialise(filename):
     # Check if the file exists in the current directory
-    file_path = os.path.join(os.getcwd(), "../Input Data",filename)
+    file_path = os.path.join(os.getcwd(), "Input Data",filename)
     drivers = []
 
     if not os.path.isfile(file_path):
