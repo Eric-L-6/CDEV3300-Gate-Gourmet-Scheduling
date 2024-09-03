@@ -35,6 +35,6 @@ class ShiftParser():
 
 
 if __name__ == "__main__":
-    shifts = ShiftMaker.shiftInitialise("daily_M.xlsx")
+    shifts = ShiftParser.shiftInitialise("daily_M.xlsx")
     for shift in shifts:
         print(shift)

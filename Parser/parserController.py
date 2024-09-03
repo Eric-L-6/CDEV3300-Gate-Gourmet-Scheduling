@@ -15,9 +15,8 @@ class ParserController:
         return employees
     
     def getAvailableEmployees(self, date:datetime):
-        available_employees = []
-        rp = RoasterParser()
-        return rp.getAvailableDrivers(datetime(2024, 9, 30), self.drivers)
+        rp = RoasterParser("roaster_M.xlsx")
+        return rp.getAvailableDrivers(date, self.drivers)
     
     def getShifts(self):
         return self.shifts
@@ -25,9 +24,9 @@ class ParserController:
 
 if __name__ == "__main__":
     pc = ParserController()
-    print("All employees:")
-    print(pc.getAllEmployees())
+    # print("All employees:")
+    # print(pc.getAllEmployees())
     print("Available employees:")
-    print(pc.getAvailableEmployees(datetime(2024, 9, 30)))
-    print("Shifts:")
-    print(pc.getShifts())
+    print(pc.getAvailableEmployees(datetime(2024, 10, 6)))
+    # print("Shifts:")
+    # print(pc.getShifts())
