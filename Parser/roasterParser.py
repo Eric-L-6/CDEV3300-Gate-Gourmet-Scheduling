@@ -19,7 +19,6 @@ class RoasterParser():
             "value": cell.value,
             "fill_color": None
         }
-        print(cell.fill)
 
         # Check if the cell has a fill and access its color
         if cell.fill and cell.fill.fgColor.type == "rgb":
@@ -52,7 +51,7 @@ class RoasterParser():
         driver_id_map = {}
         for row in range(2, ws.max_row + 1):
             driver_id_map[ws.cell(row=row, column=1).value] = row
-        print(driver_id_map)
+        # print(driver_id_map)
 
         # Check if the driver is available on the date
         available_drivers = []
@@ -61,7 +60,7 @@ class RoasterParser():
                 row = driver_id_map[driver.id]
                 cell_info = self.getCellInfo(row, date_col)
                 if cell_info["fill_color"] != self.unavailable_slot:
-                    print(f"Driver {driver.id} is available on {date}")
+                    # print(f"Driver {driver.id} is available on {date}")
                     available_drivers.append(driver.id)
 
         # return a list of available drivers ids
