@@ -3,7 +3,7 @@ from scipy.sparse import csr_matrix
 from scipy.sparse.csgraph import maximum_bipartite_matching
 from Helpers.drivers import Driver
 from Helpers.shifts import Shift
-from typing import Dict, List, Set
+from typing import Dict, List, Set, Union
 
 class MaxBipartiteGraphSolver:
     def __init__(self, all_employees: Dict[int, Driver], available_employees: List[int], shifts: List[Shift]):
@@ -14,7 +14,7 @@ class MaxBipartiteGraphSolver:
         self.graph = self.createBipartiteGraph(available_employees, shifts)
         self.csr_graph = csr_matrix(self.graph)
 
-    def solve(self):
+    def solve(self) -> Dict[int, Union[int, List[int]]]:
         max_matching = maximum_bipartite_matching(self.csr_graph, perm_type='row') # match by shift
 
         result = {}
