@@ -40,7 +40,7 @@ class Driver:
 
 def driverInitialise(filename):
     # Check if the file exists in the current directory
-    file_path = os.path.join(os.getcwd(), filename)
+    file_path = os.path.join(os.getcwd(), "../Input Data",filename)
     drivers = []
 
     if not os.path.isfile(file_path):
@@ -50,8 +50,6 @@ def driverInitialise(filename):
         for i in range(0, len(df.columns)):
             index_column_table.append((df.columns[i]))
         skill_set = df.columns[offset: offset + num_skill].tolist()
-        # print(df.columns)
-        # print(skill_set)
         for i in range(1, len(df)):
             # skip if the first column is empty
             if pd.isnull(df.iloc[i, 0]):
@@ -61,7 +59,6 @@ def driverInitialise(filename):
                 break
             # create a driver if the first column is not empty
             if not pd.isnull(df.iloc[i, 0]):
-                print(df.iloc[i].tolist())
                 driver = Driver(df.iloc[i].tolist(), skill_set)
                 drivers.append(driver)
 

@@ -15,7 +15,7 @@ class Shift:
 
 def shiftInitialise(filename):
     # load the workbook and select the active sheet
-    workbook_path = os.path.join(os.getcwd(), filename)
+    workbook_path = os.path.join(os.getcwd(), "../Input Data", filename)
     wb = openpyxl.load_workbook(workbook_path)
     ws = wb.active
     shifts = []
