@@ -7,30 +7,37 @@ index_column_table = []
 
  # Driver Class
 class Driver:
-    def __init__(self, driver_info, skill_set):
+    # id: int
+    # name: string
+    # skill_set: set of string
+    # responsible_task: string
+    # last_work_time: datetime
+
+    def __init__(self, driver_info:list, skill_set:list):
         self.driverSetUp(driver_info, skill_set)
 
     def __str__(self):
         return f"Driver: {self.name}\nID: {self.id}\nSkill set: {self.skill_set}\nResponsible task: {self.responsible_task}\n"
     
-    def driverSetUp(self, driver_info, skill_set):
+    # driver_info: list of driver information(row)
+    # skill_matrix: list of existing skills(column)
+    def driverSetUp(self, driver_info:list , skill_matrix:list):
         self.id = driver_info[0]
         self.name = driver_info[1]
-        self.skill_set = self.skillSetUp(driver_info[2:], skill_set)
+        self.skill_set = self.skillSetUp(driver_info[2:], skill_matrix)
         self.responsible_task = self.responsibleSetUp(driver_info);
         self.last_work_time = None
 
-    def skillSetUp(self, skill_info, skill_set):
-        skill_dict = {}
-        for i in range(len(skill_set)):
+    # skill_info: list of skill information(row)
+    def skillSetUp(self, skill_info:list, skill_matrix:list):
+        skill_set = set()
+        for i in range(len(skill_matrix)):
             # if skill = 〇
             if skill_info[i] == "〇":
-                skill_dict[skill_set[i]] = True
-            else:
-                skill_dict[skill_set[i]] = False
-        return skill_dict
+                skill_set.add(skill_matrix[i])
+        return skill_set
     
-    def responsibleSetUp(self, driver_info):
+    def responsibleSetUp(self, driver_info:list):
         index = index_column_table.index("Responsible task")
         if index in range(len(driver_info)):
             return driver_info[index]
@@ -38,7 +45,7 @@ class Driver:
             return None
 
 class DriverMaker:
-    def driverInitialise(filename):
+    def driverInitialise(filename:str):
         # Check if the file exists in the current directory
         file_path = os.path.join(os.getcwd(), "Input Data",filename)
         drivers = []

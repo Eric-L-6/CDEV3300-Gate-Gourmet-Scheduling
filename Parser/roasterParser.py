@@ -52,7 +52,9 @@ def getAvailableDrivers(date, drivers):
     for row in range(2, ws.max_row + 1):
         cell_info = getCellInfo(row, date_col)
         if cell_info["fill_color"] != unavailable_slot:
-            driver_ids.append(ws.cell(row=row, column=1).value)
+            # TODO: Check driver last work time
+
+            avaiable_drivers.append(ws.cell(row=row, column=1).value)
 
     # return a list of available drivers ids
     return available_drivers
