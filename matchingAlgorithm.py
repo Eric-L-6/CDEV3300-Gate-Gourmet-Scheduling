@@ -3,18 +3,35 @@
 # A list of available employees
 # A list of shifts and required 
 from collections import deque
+from scipy.sparse import csr_matrix
+from scipy.sparse.csgraph import maximum_bipartite_matching
 
-SOURCE = 'SOURCE_NODE';
-SINK = 'SINK_NODE';
 
+class Driver:
+    def __init__(self, id):
+        self.id = id
 
-taskTypes = ['one', 'two']
-skillsMatrix = {'a': {'one': True, 'two': False}, 'b': {'one': False, 'two': False}, 'c': {'one': False, 'two': True}}
-availableEmplyees = ['a', 'b', 'c']
-unavailableEmployees = []
+class Shift:
+    def __init__(self, id):
+        self.id = id
 
-# shift need to 
-dailyShift = [start time['one'], ['two'], ['one', 'two']]
+e1 = Driver(1)
+e2 = Driver(2)
+e3 = Driver(3)
+e4 = Driver(4)
+
+s1 = Shift(1)
+s2 = Shift(2)
+s3 = Shift(3)
+
+# inputs
+employees = {1: e1, 2: e2, 3: e3, 4: e4}
+available_employees = [1, 4]
+shifts = [s1, s2, s3]
+
+# outputs
+# {shiftId: driverId}
+result = {s1.id: e1.id, s2: e4.id, s3.id: [e2.id, e3.id]}
 
 
 
@@ -27,31 +44,39 @@ def getPriority(tasks):
 
 def elegible(employee, tasks):
     for task in tasks:
-        if not skillsMatrix[employee][task]:
+        if not employee.skill_set[task]:
             return False
     
     return True
 
-def createBipartiteGraph():
-    graph = {}
-    graph[SOURCE] = {}
-    graph[SINK] = {}
+class BipartiteGraph:
+    def __init__(self, available_employees, shifts):
+        self.graph = self.createBipartiteGraph(available_employees, shifts)
+        self.source = len(available_employees)
 
-    for employee in availableEmplyees:
-        graph[employee] = {}
-        graph[SOURCE][employee] = 1
 
-    for shift in range(len(dailyShift)):
-        graph[shift] = {}
-        graph[shift][SINK] = 1
-    
-    for employee in availableEmplyees:
-        for shift, tasks in enumerate(dailyShift):
-            if elegible(employee, tasks):
-                graph[employee][shift] = 1 * getPriority(tasks)
-                graph[shift][employee] = 0
+        
 
-    return graph
+    def createBipartiteGraph(available_employees, shifts):
+        graph = [[0 for _ in range(len(shifts))] for _ in range(len(available_employees))] 
+        graph[SOURCE] = 
+        graph[SINK] = {}
+
+        for e_id in available_employees:
+            graph[employee] = {}
+            graph[SOURCE][employee] = 1
+
+        for shift in range(len(dailyShift)):
+            graph[shift] = {}
+            graph[shift][SINK] = 1
+        
+        for employee in availableEmplyees:
+            for shift, tasks in enumerate(dailyShift):
+                if elegible(employee, tasks):
+                    graph[employee][shift] = 1 * getPriority(tasks)
+                    graph[shift][employee] = 0
+
+        return graph
 
 # need the edmonds karp algorithm
 def edmonds_karp(graph):
