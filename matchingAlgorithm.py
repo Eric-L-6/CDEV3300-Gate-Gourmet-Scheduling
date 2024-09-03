@@ -1,7 +1,8 @@
 # After parsing: Will have:
 # A skills matrix for all employees
 # A list of available employees
-# A list of shifts and required 
+# A list of shifts and required
+import numpy as np 
 from collections import deque
 from scipy.sparse import csr_matrix
 from scipy.sparse.csgraph import maximum_bipartite_matching
@@ -10,6 +11,7 @@ from scipy.sparse.csgraph import maximum_bipartite_matching
 class Driver:
     def __init__(self, id):
         self.id = id
+        self.skill_set = set({"one", "two"})
 
 class Shift:
     def __init__(self, id):
@@ -39,42 +41,26 @@ result = {s1.id: e1.id, s2: e4.id, s3.id: [e2.id, e3.id]}
 # based on how many employees can perform the shift
 # OR based on how many available employees cna perform the shift?????????????????????
 
-def getPriority(tasks):
-    return len(tasks)
 
-def elegible(employee, tasks):
-    for task in tasks:
-        if not employee.skill_set[task]:
-            return False
-    
-    return True
 
 class BipartiteGraph:
     def __init__(self, available_employees, shifts):
-        self.graph = self.createBipartiteGraph(available_employees, shifts)
-        self.source = len(available_employees)
+        self.graph_csr = self.createCSRBipartiteGraph(available_employees, shifts)
 
+    def elegible(employee, tasks):
+        for task in tasks:
+            if task in employee.skill_set:
+                return True
+    
+        return False
 
-        
-
-    def createBipartiteGraph(available_employees, shifts):
+    def createBipartiteGraph(self, available_employees, shifts):
         graph = [[0 for _ in range(len(shifts))] for _ in range(len(available_employees))] 
-        graph[SOURCE] = 
-        graph[SINK] = {}
 
-        for e_id in available_employees:
-            graph[employee] = {}
-            graph[SOURCE][employee] = 1
-
-        for shift in range(len(dailyShift)):
-            graph[shift] = {}
-            graph[shift][SINK] = 1
-        
-        for employee in availableEmplyees:
-            for shift, tasks in enumerate(dailyShift):
-                if elegible(employee, tasks):
-                    graph[employee][shift] = 1 * getPriority(tasks)
-                    graph[shift][employee] = 0
+        for e_index, e_id in enumerate(available_employees):
+            for s_index, shift in enumerate(shifts):
+                if self.elegible(employees[e_id], shift):
+                    graph[e_index][s_index] = 1
 
         return graph
 
