@@ -1,12 +1,12 @@
-import drivers
-import shifts
+from drivers import DriverMaker
+from shifts import ShiftMaker
 
 def test_driverInitialise():
-    drivers.driverInitialise("skill_M.xlsx")
+    DriverMaker.driverInitialise("skill_M.xlsx")
     print("Test passed")
 
 def test_shiftInitialise():
-    shifts.shiftInitialise("daily_M.xlsx")
+    ShiftMaker.shiftInitialise("daily_M.xlsx")
     print("Test passed")
 
 if __name__ == "__main__":
