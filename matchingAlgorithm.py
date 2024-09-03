@@ -2,31 +2,6 @@ from datetime import datetime, timedelta
 from scipy.sparse import csr_matrix
 from scipy.sparse.csgraph import maximum_bipartite_matching
 
-class Driver:
-    def __init__(self, id: int, skill_set: set, last_work_time: datetime = None):
-        self.id = id
-        self.skill_set = skill_set
-        self.last_work_time = last_work_time
-
-class Shift:
-    def __init__(self, id: int, tasks: set, start_time: datetime = None):
-        self.id = id
-        self.tasks = tasks
-        self.start_time = start_time
-
-e1 = Driver(1, {'a', 'b'})
-e2 = Driver(2, {'a'})
-e3 = Driver(3, {'b'})
-e4 = Driver(4, {'a', 'b', 'c'})
-
-s1 = Shift(1, {'a'})
-s2 = Shift(2, {'a', 'b'})
-s3 = Shift(3, {'a', 'c'})
-
-# inputs
-all_employees = {1: e1, 2: e2, 3: e3, 4: e4}
-available_employees = [2, 3]
-shifts = [s1, s2, s3]
 
 # outputs
 # {shiftId: driverId}
@@ -95,6 +70,33 @@ class MaxBipartiteGraphSolver:
             print(row)
 
 if __name__ == '__main__':
+
+    class Driver:
+        def __init__(self, id: int, skill_set: set, last_work_time: datetime = None):
+            self.id = id
+            self.skill_set = skill_set
+            self.last_work_time = last_work_time
+
+    class Shift:
+        def __init__(self, id: int, tasks: set, start_time: datetime = None):
+            self.id = id
+            self.tasks = tasks
+            self.start_time = start_time
+
+    e1 = Driver(1, {'a', 'b'})
+    e2 = Driver(2, {'a'})
+    e3 = Driver(3, {'b'})
+    e4 = Driver(4, {'a', 'b', 'c'})
+
+    s1 = Shift(1, {'a'})
+    s2 = Shift(2, {'a', 'b'})
+    s3 = Shift(3, {'a', 'c'})
+
+    # inputs
+    all_employees = {1: e1, 2: e2, 3: e3, 4: e4} # e_id: driver
+    available_employees = [2, 3]
+    shifts = [s1, s2, s3]
+
     bg = MaxBipartiteGraphSolver(all_employees, available_employees, shifts)
     bg.print_graph()
     print("max matching")
