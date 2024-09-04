@@ -2,7 +2,7 @@ from tkinter import ttk, messagebox
 from controller import Controller
 import tkinter as tk
 import os
-from constants import INPUT_PATH, MONTHLY_ROSTERS_PATH, WEEKLY_TEMPLATES_PATH
+from constants import MONTHLY_ROSTERS_PATH, WEEKLY_TEMPLATES_PATH
 
 ##################################################################
 ########################## Helpers ###############################
@@ -39,9 +39,10 @@ if __name__ == '__main__':
 
         # TODO process the selection
         controller = Controller(monthly_roster, weekly_template_dir)
-        controller.process();
-        messagebox.showinfo("Selection", f"Selected roster: {monthly_roster}\nSelected template: {weekly_template_dir}")
-        root.destroy()
+        
+        # close program if successfull
+        if controller.process():
+            root.destroy()
 
     # Create the main application window
     root = tk.Tk()
