@@ -2,7 +2,7 @@ from openpyxl import load_workbook
 from openpyxl.styles import PatternFill
 from datetime import datetime, timedelta
 import os
-class RoasterParser():
+class RosterParser():
 
     unavailable_slot = "FFFF0000"
     driver_id_map = {}
@@ -148,7 +148,7 @@ class RoasterParser():
 
 if __name__ == "__main__":
      # Example usage
-    parser = RoasterParser()
+    parser = RosterParser()
     # date = datetime(2023, 10, 1)  # Example date
     # drivers = []  # Example list of driver objects
     # available_drivers = parser.getAvailableDrivers(date, drivers)
