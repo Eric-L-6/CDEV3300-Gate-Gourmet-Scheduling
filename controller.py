@@ -38,10 +38,17 @@ class Controller:
 
             # write to new daily schedule and monthly roster
             daily_schedule_filename = f"{day} {date.strftime("%d-%m-%Y")}.xlsx"
-            monthly_roster_filename = f"{os.path.splitext(self.monthly_roster)[0]} {self.roster_sheet}"
+            monthly_roster_dir = f"{os.path.splitext(self.monthly_roster)[0]} {self.roster_sheet}"
+            
+            # check if monthly roster dir exists
+            # if not exists: create dir
+            # copy daily template for the day to dir named as daily_schedule_filename
+            #   overwrite if exists
+            # do same thing as writetomonthlyroster
+            #   if a list - write list to the cell and change cell backgroun colour to eg yellow
 
-            pc.writeToNewDailySchedule(results, monthly_roster_filename, daily_schedule_filename)
-            pc.writeToMonthlyRoster(results)
+            pc.writeToNewDailySchedule(results, monthly_roster_dir, daily_schedule_filename)
+            pc.writeToMonthlyRoster(results, success)
 
             created_daily_rosters.append(daily_schedule_filename)
             
@@ -53,7 +60,7 @@ class Controller:
         title = "Info"
         message = f"""
 Updated '{self.monthly_roster} > {self.roster_sheet}'.
-Created the following daily rosters in 'Outputs/{monthly_roster_filename}/':
+Created the following daily rosters in 'Outputs/{monthly_roster_dir}':
 {daily_roster_str}
 """
         messagebox.showinfo(title, message)
