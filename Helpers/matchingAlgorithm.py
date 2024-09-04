@@ -17,7 +17,7 @@ class MaxBipartiteGraphSolver:
     def solve(self) -> Tuple[bool, Dict[int, Union[int, List[int]]]]:
         max_matching = maximum_bipartite_matching(self.csr_graph, perm_type='row') # match by shift
 
-        result = {}
+        results = {}
         success = True
         for s_index, e_index in enumerate(max_matching):
             if e_index == -1:
@@ -26,8 +26,8 @@ class MaxBipartiteGraphSolver:
             else:
                 match = self.available_employees[e_index]
 
-            result[self.shifts[s_index].id] = match
-        return (success, result)
+            results[self.shifts[s_index].id] = match
+        return (success, results)
     
     def createBipartiteGraph(self, employees: List[int], shifts: List[Shift]) -> List[List[int]]:
         graph = [[0 for _ in range(len(shifts))] for _ in range(len(employees))] 
