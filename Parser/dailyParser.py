@@ -69,7 +69,7 @@ class DailyParser():
                 result = ", ".join(employee_names)
 
                 # Set the fill color to yellow
-                fill_color = "00FFFF00"
+                fill_color = "FF6600"
             else :
                 # get the name of the employee
                 employee = employees[employee_id]
