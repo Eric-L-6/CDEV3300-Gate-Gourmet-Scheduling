@@ -13,7 +13,7 @@ class RosterParser():
 
     def __init__(self, workbook_path):
         # Load the workbook and select the active sheet
-        self.workbook_path = os.path.join(os.getcwd(),"Input Data", workbook_path)
+        self.workbook_path = workbook_path
         self.wb = load_workbook(self.workbook_path)
         self.ws = self.wb.active
         self.driver_id_map = self.initDriverIdMap()
