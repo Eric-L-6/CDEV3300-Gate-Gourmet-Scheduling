@@ -1,6 +1,6 @@
 from openpyxl import load_workbook
 from openpyxl.styles import PatternFill
-from datetime import datetime
+from datetime import datetime, timedelta
 import os
 class RoasterParser():
 
@@ -10,14 +10,41 @@ class RoasterParser():
     ws = None
 
     def __init__(self, workbook_path):
-        # self.driver_id_map = self.initDriverIdMap()
-        # self.date_index_map = self.initDateIndexMap()
         # Load the workbook and select the active sheet
         self.workbook_path = os.path.join(os.getcwd(),"Input Data", workbook_path)
         self.wb = load_workbook(self.workbook_path)
         self.ws = self.wb.active
+        self.driver_id_map = self.initDriverIdMap()
+        self.date_index_map = self.initDateIndexMap()
+        print(self.date_index_map)
     
+    def initDriverIdMap(self):
+        driver_id_map = {}
+        for row in range(2, self.ws.max_row + 1):
+            driver_id = self.ws.cell(row=row, column=1).value
+            if driver_id is not None:
+                driver_id_map[self.ws.cell(row=row, column=1).value] = row
+        return driver_id_map
+    
+    def initDateIndexMap(self):
+        date_index_map = {}
+        for col in range(2, self.ws.max_column + 1):
+            date = self.ws.cell(row=2, column=col).value
+            # date is a datetime object
+            if date is not None and type(date) == datetime:
+                date_index_map[date] = col
+        return date_index_map
+    
+    def getKeyFromValue(self, d, value):
+        for key, val in d.items():
+            if val == value:
+                return key
+        return None
 
+
+    def getDateRange(self):
+        # get the date range from the excel file 
+        return
 
     # Function to access a cell based on row and column
     def getCellInfo(self, row, col):
@@ -74,26 +101,20 @@ class RoasterParser():
         if date_col is None:
             return []
         # print(f"Date column index: {date_col}")
-        
-        # Get the row index mapping to the driver id
-        driver_id_map = {}
-        for row in range(2, self.ws.max_row + 1):
-            driver_id = self.ws.cell(row=row, column=1).value
-            if driver_id is not None:
-                driver_id_map[self.ws.cell(row=row, column=1).value] = row
-        print(driver_id_map)
 
         # Check if the driver is available on the date
         available_drivers = []
 
         for driver in drivers:
             print(driver.id)
-            if driver.id in driver_id_map:
-                row = driver_id_map[driver.id]
+            if driver.id in self.driver_id_map:
+                row = self.driver_id_map[driver.id]
                 cell_info = self.getCellInfo(row, date_col)
                 # print(f'Before {driver.id} + {cell_info}')
                 if cell_info["fill_color"] != self.unavailable_slot:
-                    self.writing(row, date_col, value="欠")
+                    # self.writing(row, date_col, value="欠")
+                    # update the last working time of the driver
+                    self.updateLastWorkingTime(row, date_col, driver)
                     available_drivers.append(driver.id)
 
                 # print(f'After {driver.id} + {cell_info}')
@@ -103,6 +124,26 @@ class RoasterParser():
         # return a list of available drivers ids
         return available_drivers
     
+    def updateLastWorkingTime(self, row, date_col, driver):
+        # get date from date_col
+        date = self.getKeyFromValue(self.date_index_map, date_col)
+        # find the previous date
+        prev_date = date - timedelta(days=1)
+        print(f"Previous date: {prev_date}")
+        # find the previous date column index
+        prev_date_col = self.date_index_map[prev_date]
+        if prev_date_col is None:
+            driver.last_work_time = None
+            return
+        # get the previous cell info
+        prev_cell_info = self.getCellInfo(row, prev_date_col)
+        # check if the previous cell is filled with red color
+        if prev_cell_info["fill_color"] == self.unavailable_slot:
+            # if so, update the last working time to None
+            driver.last_work_time = None
+        else:
+            print(f'Have yesterday work record: {prev_cell_info}')
+
     
 
 if __name__ == "__main__":

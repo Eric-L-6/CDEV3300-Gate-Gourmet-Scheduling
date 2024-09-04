@@ -27,6 +27,6 @@ if __name__ == "__main__":
     # print("All employees:")
     # print(pc.getAllEmployees())
     print("Available employees:")
-    print(pc.getAvailableEmployees(datetime(2024, 10, 6)))
+    print(pc.getAvailableEmployees(datetime(2024, 10, 1)))
     # print("Shifts:")
     # print(pc.getShifts())
