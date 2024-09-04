@@ -9,7 +9,7 @@ class Driver:
         self.driverSetUp(driver_info, skill_set)
 
     def __str__(self):
-        return f"Driver: {self.name}\nID: {self.id}\nSkill set: {self.skill_set}\n"
+        return f"Driver: {self.name}\nID: {self.id}\nSkill set: {self.skill_set}\nLast work time: {self.last_work_time}\n"
     
     # driver_info: list of driver information(row)
     # skill_matrix: list of existing skills(column)

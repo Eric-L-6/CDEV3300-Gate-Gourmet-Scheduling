@@ -10,8 +10,7 @@ class DriverParser():
         drivers = []
 
         # read the excel file
-        workbook_path = os.path.join(os.getcwd(),"Input Data", file_path)
-        wb = openpyxl.load_workbook(workbook_path)
+        wb = openpyxl.load_workbook(file_path)
         ws = wb['Team member list']
 
         skillset = []

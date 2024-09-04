@@ -3,7 +3,8 @@ from openpyxl.styles import PatternFill
 from datetime import datetime, timedelta
 import os
 class RosterParser():
-
+    missing_slot = "欠"
+    processed_slot = "完"
     unavailable_slot = "FFFF0000"
     driver_id_map = {}
     date_index_map = {}
@@ -98,7 +99,6 @@ class RosterParser():
         # Get the column index based on the date
         date_col = None
         for col in range(1, self.ws.max_column + 1):
-            print(self.ws.cell(row=2, column=col).value)
             if self.ws.cell(row=2, column=col).value == date:
                 date_col = col
                 break
@@ -133,12 +133,12 @@ class RosterParser():
         date = self.getKeyFromValue(self.date_index_map, date_col)
         # find the previous date
         prev_date = date - timedelta(days=1)
-        print(f"Previous date: {prev_date}")
-        # find the previous date column index
-        prev_date_col = self.date_index_map[prev_date]
-        if prev_date_col is None:
+        if prev_date not in self.date_index_map:
             driver.last_work_time = None
             return
+        # print(f"Previous date: {prev_date}")
+        # find the previous date column index
+        prev_date_col = self.date_index_map[prev_date]
         # get the previous cell info
         prev_cell_info = self.getCellInfo(row, prev_date_col)
         # check if the previous cell is filled with red color
@@ -147,20 +147,37 @@ class RosterParser():
             driver.last_work_time = None
         else:
             print(f'Have yesterday work record: {prev_cell_info}')
+            if prev_cell_info["value"] == self.missing_slot:
+                raise Exception(f"Missing slot for {driver.id} on {prev_date}")
+            if prev_cell_info["value"] == "REF" or prev_cell_info["value"] == "VAC":
+                driver.last_work_time = None
+                return
+            last_work_time = prev_cell_info["value"].split("-")[1]
+            # Split the reading into hours and minutes
+            if '.' in last_work_time:
+                hours, minutes_fraction = str(last_work_time).split('.')
+                hours = int(hours)
+                minutes = int(float('0.' + minutes_fraction) * 60)
+            else:
+                hours = int(last_work_time)
+                minutes = 0
+            # Create a datetime object with the current date and the extracted time
+            current_date = datetime.now().date()
+            result_datetime = datetime.combine(current_date, datetime.min.time()).replace(hour=hours, minute=minutes)
+            driver.last_work_time = result_datetime
 
-    
+    def dayHasBeenProcessed(self, date: datetime):
+        # Get the column index based on the date
+        if date not in self.date_index_map:
+            return False
+        date_col = self.date_index_map[date]
+        
+        # Check it has been processed
+        cell_info = self.getCellInfo(3, date_col)
+        if cell_info["value"] == self.processed_slot:
+            return True
+        return False
 
-if __name__ == "__main__":
-     # Example usage
-    parser = RosterParser()
-    # date = datetime(2023, 10, 1)  # Example date
-    # drivers = []  # Example list of driver objects
-    # available_drivers = parser.getAvailableDrivers(date, drivers)
-    # print(available_drivers)
 
-    # Example of writing to a cell
-    workbook_path = os.path.join(os.getcwd(), "Input Data/roaster_M.xlsx")
-    wb = load_workbook(workbook_path)
-    ws = wb.active
-    parser.writing(4, 4, ws, value="Test Value")
-    wb.save(workbook_path)  # Save the workbook to persist changes
+
+
