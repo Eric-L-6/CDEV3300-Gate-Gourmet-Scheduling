@@ -9,10 +9,11 @@ from constants import MONTHLY_ROSTERS_PATH
 import os
 
 class ParserController:
-    def __init__(self, monthly_roster_filepath:str, weekly_template_dir:str):
+    def __init__(self, monthly_roster_filepath:str, roster_sheetname:str, weekly_template_dir:str):
 
         self.drivers = DriverParser.driverInitialise(SKILLS_MATRIX_PATH)
         self.rp = RosterParser(os.path.join(MONTHLY_ROSTERS_PATH, monthly_roster_filepath))
+        self.rp.setSheet(roster_sheetname)
         self.weekly_template_dir = os.path.join(WEEKLY_TEMPLATES_PATH, weekly_template_dir)
         self.employees = {}
         self.shifts = {}
@@ -45,11 +46,10 @@ class ParserController:
     def dayHasBeenProcessed(self, date: datetime):
         return self.rp.dayHasBeenProcessed(date)
     
-    def getRosterSheetList(self):
-        return self.rp.getRosterSheetList()
-    
-    def setRosterSheet(self, sheet_name:str):
-        self.rp.setSheet(sheet_name)
+    @staticmethod
+    def getRosterSheetList(filename:str):
+        rp = RosterParser(os.path.join(MONTHLY_ROSTERS_PATH, filename))
+        return rp.getRosterSheetList()
     
     #########################################################################
     #######################    Writer Functions     #########################
@@ -63,9 +63,9 @@ class ParserController:
     
 
 if __name__ == "__main__":
-    pc = ParserController("Roster.xlsx", "2024 First Half")
+    print(ParserController.getRosterSheetList("Roster.xlsx"))
 
-    print(pc.getRosterSheetList())
+    pc = ParserController("Roster.xlsx", "30-SEP", "2024 First Half")
     
     # print("All employees:")
     # print(pc.getAllEmployees())
@@ -85,8 +85,8 @@ if __name__ == "__main__":
     # print("Monthly date range:")
     # print(pc.getMonthlyDateRange())
 
-    # print("Day has been processed:")
-    # print(pc.dayHasBeenProcessed(datetime(2024, 9, 30)))
+    print("Day has been processed:")
+    print(pc.dayHasBeenProcessed(datetime(2024, 9, 30)))
 
     # shift_id_list = [shifts[0].id]
     # result = {}
