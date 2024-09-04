@@ -10,12 +10,12 @@ class Controller:
         self.monthly_roster = monthly_roster
         self.weekly_template_dir = weekly_template_dir
 
-    def process(self):
+    def process(self, pause_first_day: bool) -> bool:
         pc = ParserController(self.monthly_roster, self.weekly_template_dir)
 
         # read skillsmatrix -> get all_employees + skillsets
         all_employees = pc.getAllEmployees()
-        createdDailyRosters = []
+        created_daily_rosters = []
 
         # main loop - iterate through monthly roster day by day
         for idx, date in enumerate(pc.getMonthlyDateRange()):
@@ -37,26 +37,44 @@ class Controller:
 
             # write to new daily schedule and monthly roster
             daily_schedule_filename = f"{day} {date.strftime("%d-%m-%Y")}.xlsx"
-            path = os.path.splitext(self.monthly_roster)[0]
+            monthly_roster_filename = os.path.splitext(self.monthly_roster)[0]
 
-            pc.writeToNewDailySchedule(results, path, daily_schedule_filename)
+            pc.writeToNewDailySchedule(results, monthly_roster_filename, daily_schedule_filename)
             pc.writeToExistingMonthlyRoster(results)
 
-            createdDailyRosters.append(daily_schedule_filename)
+            created_daily_rosters.append(daily_schedule_filename)
             
             # pause if conflict occurs
-            if not success or idx == 0:
+            if not success or idx == 0 and pause_first_day:
                 break
         
+        daily_roster_str = "\n".join([f"\t{daily_roster}" for daily_roster in created_daily_rosters])
+        title = "Info"
+        message = f"""
+Updated '{self.monthly_roster}'.
+Created the following daily rosters in 'Outputs/{monthly_roster_filename}/':
+{daily_roster_str}
+"""
+        messagebox.showinfo(title, message)
+
         # showinfo
         if success:
-            pass
+            title = "Success"
+            message = f"Successfully allocated all drivers for {self.monthly_roster}"
+            messagebox.showinfo(title, message)
 
         # showwarning
-        else :
-            pass
-            print(date, day)
+        elif idx == 0 and pause_first_day:
+            success = False
+            title = "Caution"
+            message = f"Please check if the allocation for the first day of the month '{created_daily_rosters[-1]}' is valid before running the program again.\nCheck if the rostered drivers have at least 12 hours between shifts in the previous month.\nIf there are conflicts, please manually resolve and update both {created_daily_rosters[-1]} and {self.monthly_roster}"
+            messagebox.showwarning(title, message)
         
+        else:
+            title = "Warning"
+            message = f"Conflict occured in '{created_daily_rosters[-1]}'. Please manually resolve this issue and update the Monthly Roster '{self.monthly_roster}' before running the program again."
+            messagebox.showerror(title, message)
+
         return success
 
 

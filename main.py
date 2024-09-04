@@ -30,6 +30,7 @@ if __name__ == '__main__':
     def onSubmit():
         monthly_roster = file_combobox.get()
         weekly_template_dir = folder_combobox.get()
+        pause_first_day = check_first_day_var.get()
         
         if not validWeeklyTemplateDir(weekly_template_dir):
             return
@@ -41,13 +42,13 @@ if __name__ == '__main__':
         controller = Controller(monthly_roster, weekly_template_dir)
         
         # close program if successfull
-        if controller.process():
+        if controller.process(pause_first_day):
             root.destroy()
 
     # Create the main application window
     root = tk.Tk()
     root.title("Shift Scheduler")
-    root.geometry("400x200")
+    root.geometry("400x300")
 
     # File selection label and Combobox
     file_label = tk.Label(root, text="Select the monthly roster:")
@@ -78,6 +79,11 @@ if __name__ == '__main__':
     else:
         folder_combobox['values'] = ["No templates found"]
     folder_combobox.pack(pady=5)
+
+    # Pause first day to check if driver worked the last day of the previous month
+    check_first_day_var = tk.BooleanVar()
+    check_button = tk.Checkbutton(root, text="Pause on the first day of the Month", variable=check_first_day_var)
+    check_button.pack(side=tk.BOTTOM, pady=5)
 
     # Button to confirm selection
     confirm_button = tk.Button(root, text="Confirm Selection", command=onSubmit)
