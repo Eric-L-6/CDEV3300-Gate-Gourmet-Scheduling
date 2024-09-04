@@ -209,8 +209,8 @@ class RosterParser():
         # result = {s1.id: e1.id, s2: e4.id, s3.id: [e2.id, e3.id]}
         # Write the result to the monthly roster
 
-        print("Employees:")
-        print(employees)
+        # print("Employees:")
+        # print(employees)
 
         for shift_id, employee_id in result.items():
             # no available employees found
