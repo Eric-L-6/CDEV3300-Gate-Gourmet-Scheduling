@@ -32,13 +32,12 @@ if __name__ == '__main__':
         weekly_template_dir = folder_combobox.get()
         pause_first_day = check_first_day_var.get()
         
-        if not validWeeklyTemplateDir(weekly_template_dir):
-            return
-        
         if not validMonthlyRoster(monthly_roster):
             return
+        
+        if not validWeeklyTemplateDir(weekly_template_dir):
+            return
 
-        # TODO process the selection
         controller = Controller(monthly_roster, weekly_template_dir)
         
         # close program if successfull

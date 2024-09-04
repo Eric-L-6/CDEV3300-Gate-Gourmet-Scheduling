@@ -67,12 +67,12 @@ Created the following daily rosters in 'Outputs/{monthly_roster_filename}/':
         elif idx == 0 and pause_first_day:
             success = False
             title = "Caution"
-            message = f"Please check if the allocation for the first day of the month '{created_daily_rosters[-1]}' is valid before running the program again.\nCheck if the rostered drivers have at least 12 hours between shifts in the previous month.\nIf there are conflicts, please manually resolve and update both {created_daily_rosters[-1]} and {self.monthly_roster}"
+            message = f"Please check if the allocation for the first day of the month '{created_daily_rosters[-1]}' is valid before running the program again.\n\nCheck if the rostered drivers have at least 12 hours between shifts in the previous month.\n\nIf there are conflicts, please manually resolve and update both {created_daily_rosters[-1]} and {self.monthly_roster}"
             messagebox.showwarning(title, message)
         
         else:
             title = "Warning"
-            message = f"Conflict occured in '{created_daily_rosters[-1]}'. Please manually resolve this issue and update the Monthly Roster '{self.monthly_roster}' before running the program again."
+            message = f"Conflict occured in '{created_daily_rosters[-1]}'. Please manually resolve this issue.\nUpdate the Monthly Roster '{self.monthly_roster}' before running the program again."
             messagebox.showerror(title, message)
 
         return success
