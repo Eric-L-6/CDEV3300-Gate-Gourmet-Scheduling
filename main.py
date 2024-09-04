@@ -1,5 +1,6 @@
 from tkinter import ttk, messagebox
 from controller import Controller
+from Parser.parserController import ParserController
 import tkinter as tk
 import os
 from constants import MONTHLY_ROSTERS_PATH, WEEKLY_TEMPLATES_PATH
@@ -21,6 +22,14 @@ def validMonthlyRoster(monthly_roster: str) -> bool:
     
     return True
 
+def validRosterSheet(monthly_roster_sheet: str) -> bool:
+    if not monthly_roster_sheet:
+        messagebox.showwarning("Selection Error", "Please select a monthly roster sheet from the dropdown.")
+        return False
+    
+    return True
+
+
 ##################################################################
 ########################### Main #################################
 
@@ -29,25 +38,31 @@ if __name__ == '__main__':
     # Function to handle onSubmit
     def onSubmit():
         monthly_roster = file_combobox.get()
+        roster_sheetname = sheet_combobox.get()
         weekly_template_dir = folder_combobox.get()
         pause_first_day = check_first_day_var.get()
         
-        if not validMonthlyRoster(monthly_roster):
-            return
-        
-        if not validWeeklyTemplateDir(weekly_template_dir):
-            return
+        if not validMonthlyRoster(monthly_roster): return
+        if not validRosterSheet(roster_sheetname): return
+        if not validWeeklyTemplateDir(weekly_template_dir): return
 
-        controller = Controller(monthly_roster, weekly_template_dir)
+        controller = Controller(monthly_roster, roster_sheetname, weekly_template_dir)
         
         # close program if successfull
         if controller.process(pause_first_day):
             root.destroy()
 
+    def update_folders(event):
+        selected_monthly_roster = file_combobox.get()
+        try:
+            sheet_combobox['values'] = ParserController.getRosterSheetList(selected_monthly_roster)
+        except:
+            sheet_combobox['values'] = ['Unable to read roster file']
+
     # Create the main application window
     root = tk.Tk()
     root.title("Shift Scheduler")
-    root.geometry("400x300")
+    root.geometry("400x350")
 
     # File selection label and Combobox
     file_label = tk.Label(root, text="Select the monthly roster:")
@@ -56,6 +71,9 @@ if __name__ == '__main__':
     # Create a Combobox to display xlsx file names
     file_combobox = ttk.Combobox(root, width=38, state="readonly")
 
+    # Bind the update_folders function to the ComboboxSelected event
+    file_combobox.bind("<<ComboboxSelected>>", update_folders)
+
     # Check if the path exists and populate the Combobox with xlsx files
     if os.path.exists(MONTHLY_ROSTERS_PATH) and os.path.isdir(MONTHLY_ROSTERS_PATH):
         files = [f for f in os.listdir(MONTHLY_ROSTERS_PATH) if f.endswith('.xlsx')]
@@ -63,6 +81,14 @@ if __name__ == '__main__':
     else:
         file_combobox['values'] = ["No rosters found"]
     file_combobox.pack(pady=5)
+
+    # monthly roster sheet selection label and Combobox
+    sheet_label = tk.Label(root, text="Please select the monthly roster sheet:")
+    sheet_label.pack(pady=10)
+
+    # Create a Combobox to display monthly roster sheet names
+    sheet_combobox = ttk.Combobox(root, width=38, state="readonly")
+    sheet_combobox.pack(pady=5)
 
     # Folder selection label and Combobox
     folder_label = tk.Label(root, text="Please select the weekly template:")

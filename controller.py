@@ -6,12 +6,13 @@ from Helpers.matchingAlgorithm import MaxBipartiteGraphSolver
 
 
 class Controller:
-    def __init__(self, monthly_roster: str, weekly_template_dir: str):
+    def __init__(self, monthly_roster: str, roster_sheet: str, weekly_template_dir: str):
         self.monthly_roster = monthly_roster
+        self.roster_sheet = roster_sheet
         self.weekly_template_dir = weekly_template_dir
 
     def process(self, pause_first_day: bool) -> bool:
-        pc = ParserController(self.monthly_roster, self.weekly_template_dir)
+        pc = ParserController(self.monthly_roster, self.roster_sheet, self.weekly_template_dir)
 
         # read skillsmatrix -> get all_employees + skillsets
         all_employees = pc.getAllEmployees()
@@ -26,7 +27,7 @@ class Controller:
                 continue
             
             # read monthly roster -> get daily availabilities
-            available_employees = pc.getDailyAvailability(date)
+            available_employees = pc.getAvailableEmployees(date)
 
             # read weekly template -> get daily roster
             required_shifts = pc.getShiftsFromWeeklyTemplate(day)
@@ -37,10 +38,10 @@ class Controller:
 
             # write to new daily schedule and monthly roster
             daily_schedule_filename = f"{day} {date.strftime("%d-%m-%Y")}.xlsx"
-            monthly_roster_filename = os.path.splitext(self.monthly_roster)[0]
+            monthly_roster_filename = f"{os.path.splitext(self.monthly_roster)[0]} {self.roster_sheet}"
 
             pc.writeToNewDailySchedule(results, monthly_roster_filename, daily_schedule_filename)
-            pc.writeToExistingMonthlyRoster(results)
+            pc.writeToMonthlyRoster(results)
 
             created_daily_rosters.append(daily_schedule_filename)
             
@@ -51,7 +52,7 @@ class Controller:
         daily_roster_str = "\n".join([f"\t{daily_roster}" for daily_roster in created_daily_rosters])
         title = "Info"
         message = f"""
-Updated '{self.monthly_roster}'.
+Updated '{self.monthly_roster} > {self.roster_sheet}'.
 Created the following daily rosters in 'Outputs/{monthly_roster_filename}/':
 {daily_roster_str}
 """
