@@ -9,11 +9,11 @@ from constants import MONTHLY_ROSTERS_PATH
 import os
 
 class ParserController:
-    def __init__(self, monthly_roster_filepath:str, roster_sheetname:str, weekly_template_dir:str):
+    def __init__(self, monthly_roster_filepath:str, roster_sheet:str, weekly_template_dir:str):
 
         self.drivers = DriverParser.driverInitialise(SKILLS_MATRIX_PATH)
         self.rp = RosterParser(os.path.join(MONTHLY_ROSTERS_PATH, monthly_roster_filepath))
-        self.rp.setSheet(roster_sheetname)
+        self.rp.setSheet(roster_sheet)
         self.weekly_template_dir = os.path.join(WEEKLY_TEMPLATES_PATH, weekly_template_dir)
         self.employees = {}
         self.shifts = {}

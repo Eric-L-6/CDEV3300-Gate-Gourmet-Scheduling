@@ -22,6 +22,14 @@ def validMonthlyRoster(monthly_roster: str) -> bool:
     
     return True
 
+def validRosterSheet(monthly_roster_sheet: str) -> bool:
+    if not monthly_roster_sheet:
+        messagebox.showwarning("Selection Error", "Please select a monthly roster sheet from the dropdown.")
+        return False
+    
+    return True
+
+
 ##################################################################
 ########################### Main #################################
 
@@ -30,16 +38,15 @@ if __name__ == '__main__':
     # Function to handle onSubmit
     def onSubmit():
         monthly_roster = file_combobox.get()
+        roster_sheetname = sheet_combobox.get()
         weekly_template_dir = folder_combobox.get()
         pause_first_day = check_first_day_var.get()
         
-        if not validMonthlyRoster(monthly_roster):
-            return
-        
-        if not validWeeklyTemplateDir(weekly_template_dir):
-            return
+        if not validMonthlyRoster(monthly_roster): return
+        if not validRosterSheet(roster_sheetname): return
+        if not validWeeklyTemplateDir(weekly_template_dir): return
 
-        controller = Controller(monthly_roster, weekly_template_dir)
+        controller = Controller(monthly_roster, roster_sheetname, weekly_template_dir)
         
         # close program if successfull
         if controller.process(pause_first_day):
