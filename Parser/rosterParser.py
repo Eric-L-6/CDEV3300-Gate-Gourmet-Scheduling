@@ -2,6 +2,8 @@ from openpyxl import load_workbook
 from openpyxl.styles import PatternFill
 from datetime import datetime, timedelta
 import os
+import re
+
 class RosterParser():
     missing_slot = "欠"
     processed_slot = "完"
@@ -10,12 +12,13 @@ class RosterParser():
     date_index_map = {}
     dates = []
     ws = None
+    current_date = None
 
     def __init__(self, workbook_path):
         # Load the workbook and select the active sheet
         self.workbook_path = workbook_path
         self.wb = load_workbook(self.workbook_path)
-        self.ws = self.wb.active
+        self.ws = self.wb["30-SEP"]
         self.driver_id_map = self.initDriverIdMap()
         self.date_index_map = self.initDateIndexMap()
     
@@ -67,6 +70,24 @@ class RosterParser():
 
         return cell_info
     
+    def getRosterSheetList(self):
+        # get the list of sheets in the excel file
+        sheet_list = self.wb.sheetnames
+        # Define the regex pattern for DD-MMM format
+        pattern = re.compile(r'^\d{1,2}-[A-Z]{3}$')
+        
+        # Filter the list using the pattern
+        filtered_list = [date for date in sheet_list if pattern.match(date)]
+        
+        return filtered_list
+    
+    def setSheet(self, sheet_name):
+        # set the active sheet to the given sheet name
+        if sheet_name not in self.wb.sheetnames:
+            raise Exception(f"Sheet {sheet_name} not found in workbook")
+        self.ws = self.wb[sheet_name]
+
+    
     # write a specific format of cell into the excel file
     # all cell in the given range if not filled with red color will be filled with that specific format
     def writing(self, row, col, value=None):
@@ -109,6 +130,8 @@ class RosterParser():
         # Check if the driver is available on the date
         available_drivers = []
 
+        self.current_date = date
+
         for driver in drivers:
             print(driver.id)
             if driver.id in self.driver_id_map:
@@ -120,7 +143,6 @@ class RosterParser():
                     # update the last working time of the driver
                     self.updateLastWorkingTime(row, date_col, driver)
                     available_drivers.append(driver.id)
-
                 # print(f'After {driver.id} + {cell_info}')
 
         self.wb.save(self.workbook_path)  # Save the workbook to persist changes
@@ -162,7 +184,7 @@ class RosterParser():
                 hours = int(last_work_time)
                 minutes = 0
             # Create a datetime object with the current date and the extracted time
-            current_date = datetime.now().date()
+            current_date = self.current_date
             result_datetime = datetime.combine(current_date, datetime.min.time()).replace(hour=hours, minute=minutes)
             driver.last_work_time = result_datetime
 
@@ -177,6 +199,43 @@ class RosterParser():
         if cell_info["value"] == self.processed_slot:
             return True
         return False
+    
+    def convert_datetime_to_reading(self, dt):
+        hours = dt.hour
+        minutes = dt.minute
+        
+        if minutes == 0:
+            return float(hours)
+        else:
+            return hours + minutes / 60.0
+
+    def writeToMonthlyRoster(self, result:list, employees:dict, shifts:dict):
+        # result = {s1.id: e1.id, s2: e4.id, s3.id: [e2.id, e3.id]}
+        # Write the result to the monthly roster
+
+        print("Employees:")
+        print(employees)
+
+
+        for shift_id, employee_id in result.items():
+            # Get the shift and employee objects
+            shift = shifts[shift_id]
+            employee = employees[employee_id]
+
+            # Get the row and column index based on the employee and shift
+            row = self.driver_id_map[employee.id]
+            col = self.date_index_map[self.current_date]
+
+            print(f"Writing to cell ({row}, {col})")
+
+            # Write the shift start and end time to the cell
+            start_time = self.convert_datetime_to_reading(shift.start_time)
+            end_time = self.convert_datetime_to_reading(shift.end_time)
+            self.writing(row, col, value=f"{start_time}-{end_time}")
+
+        self.wb.save(self.workbook_path)  # Save the workbook to persist changes
+
+
 
 
 
