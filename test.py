@@ -1,6 +1,6 @@
 from Parser.driverParser import DriverParser
 from Parser.shiftParser import ShiftParser
-from Parser.roasterParser import RoasterParser
+from Parser.rosterParser import RosterParser
 from datetime import datetime
 
 def test_driverInitialise():
@@ -13,7 +13,7 @@ def test_shiftInitialise():
 
 def test_getAvailableDrivers():
     drivers = DriverParser.driverInitialise("skill_M.xlsx")
-    rp = RoasterParser()
+    rp = RosterParser()
     print(rp.getAvailableDrivers(datetime(2024, 9, 30), drivers))
     # print("Test passed")
 
