@@ -157,8 +157,9 @@ class RosterParser():
         prev_date_col = self.date_index_map[prev_date]
         # get the previous cell info
         prev_cell_info = self.getCellInfo(row, prev_date_col)
+
         # check if the previous cell is filled with red color
-        if prev_cell_info["fill_color"] == self.unavailable_slot:
+        if not prev_cell_info["fill_color"] or prev_cell_info["fill_color"] == self.unavailable_slot:
             # if so, update the last working time to None
             driver.last_work_time = None
         else:
