@@ -1,6 +1,7 @@
 from Parser.driverParser import DriverParser
 from Parser.shiftParser import ShiftParser
 from Parser.rosterParser import RosterParser
+from Parser.dailyParser import DailyParser
 from datetime import datetime
 from constants import SKILLS_MATRIX_PATH
 from constants import WEEKLY_TEMPLATES_PATH
@@ -56,7 +57,8 @@ class ParserController:
     #########################################################################
 
     def writeToNewDailySchedule(self, result:list, path:str, daily_schedule_filename:str):
-        ShiftParser.writeToNewDailySchedule(result, path, daily_schedule_filename)
+        dp = DailyParser()
+        dp.writeToNewDailySchedule(result, path, daily_schedule_filename, self.weekly_template_dir, self.employees)
 
     def writeToMonthlyRoster(self, result:list, success:bool): 
         self.rp.writeToMonthlyRoster(result, success, self.employees, self.shifts)
@@ -88,12 +90,13 @@ if __name__ == "__main__":
     print("Day has been processed:")
     print(pc.dayHasBeenProcessed(datetime(2024, 9, 30)))
 
-    shift_id_list = [shifts[0].id]
-    result = {}
+    shift_id_list = [shifts[0].id, shifts[2].id]
+    result = {
+        shift_id_list[0]: [driver_id_list[0], driver_id_list[2]],
+        shift_id_list[1]: driver_id_list[1]
+    }
     i = 0
-    for shift_id in shift_id_list:
-        result[shift_id] = driver_id_list[i]
-        i += 1
     print("Result:")
     pc.writeToMonthlyRoster(result, False)
+    pc.writeToNewDailySchedule(result, 'Roster 30-SEP', "Tuesday 01-10-2024.xlsx")
 
