@@ -7,6 +7,7 @@ class RosterParser():
     unavailable_slot = "FFFF0000"
     driver_id_map = {}
     date_index_map = {}
+    dates = []
     ws = None
 
     def __init__(self, workbook_path):
@@ -16,8 +17,10 @@ class RosterParser():
         self.ws = self.wb.active
         self.driver_id_map = self.initDriverIdMap()
         self.date_index_map = self.initDateIndexMap()
-        print(self.date_index_map)
     
+    def getMonthlyDateRange(self):
+        return self.dates
+
     def initDriverIdMap(self):
         driver_id_map = {}
         for row in range(2, self.ws.max_row + 1):
@@ -33,6 +36,7 @@ class RosterParser():
             # date is a datetime object
             if date is not None and type(date) == datetime:
                 date_index_map[date] = col
+                self.dates.append(date)
         return date_index_map
     
     def getKeyFromValue(self, d, value):
