@@ -44,6 +44,12 @@ if __name__ == '__main__':
         if controller.process(pause_first_day):
             root.destroy()
 
+    def update_folders(event):
+        # Get the selected file
+        selected_file = file_combobox.get()
+        # Update the folder_combobox based on the selected file
+        folder_combobox['values'] = test.get(selected_file, ["No folders available"])
+
     # Create the main application window
     root = tk.Tk()
     root.title("Shift Scheduler")
@@ -55,6 +61,9 @@ if __name__ == '__main__':
 
     # Create a Combobox to display xlsx file names
     file_combobox = ttk.Combobox(root, width=38, state="readonly")
+
+    # Bind the update_folders function to the ComboboxSelected event
+    file_combobox.bind("<<ComboboxSelected>>", update_folders)
 
     # Check if the path exists and populate the Combobox with xlsx files
     if os.path.exists(MONTHLY_ROSTERS_PATH) and os.path.isdir(MONTHLY_ROSTERS_PATH):
