@@ -90,7 +90,7 @@ class RosterParser():
     
     # write a specific format of cell into the excel file
     # all cell in the given range if not filled with red color will be filled with that specific format
-    def writing(self, row, col, value=None):
+    def writing(self, row, col, value=None, fill_color="00000000"):
         cell = self.ws.cell(row=row, column=col)
         
         # Write a value to the cell if provided
@@ -100,14 +100,8 @@ class RosterParser():
             cell.font = cell.font.copy(color="FF000000")
         
         # Change the fill color of the cell
-        cell.fill = PatternFill(start_color="FFFFC000", end_color="FFFFC000", fill_type="solid")
-        print(f"Writing to cell ({row}, {col}): value={value}, fill_color=FFFFC000")
-
-        cell = self.ws.cell(row=row+1, column=col)
-
-        # fill with empty color and empty value
-        cell.fill = PatternFill(start_color="FFFFFFFF", end_color="FFFFFFFF", fill_type="solid")
-        cell.value = None
+        cell.fill = PatternFill(start_color=fill_color, end_color=fill_color, fill_type="solid")
+        print(f"Writing to cell ({row}, {col}): value={value}, fill_color={fill_color}")
     
         return cell
 
@@ -170,7 +164,9 @@ class RosterParser():
         else:
             print(f'Have yesterday work record: {prev_cell_info}')
             if prev_cell_info["value"] == self.missing_slot:
-                raise Exception(f"Missing slot for {driver.id} on {prev_date}")
+                # raise Exception(f"Missing slot for {driver.id} on {prev_date}")
+                driver.last_work_time = None
+                return
             if prev_cell_info["value"] == "REF" or prev_cell_info["value"] == "VAC":
                 driver.last_work_time = None
                 return
@@ -231,7 +227,10 @@ class RosterParser():
             # Write the shift start and end time to the cell
             start_time = self.convert_datetime_to_reading(shift.start_time)
             end_time = self.convert_datetime_to_reading(shift.end_time)
-            self.writing(row, col, value=f"{start_time}-{end_time}")
+            self.writing(row, col, value=f"{start_time}-{end_time}", fill_color="FFFFC000")
+
+            # Mark the cell as processed
+            self.writing(3, col, value=self.processed_slot, fill_color="FF00B050")
 
         self.wb.save(self.workbook_path)  # Save the workbook to persist changes
 

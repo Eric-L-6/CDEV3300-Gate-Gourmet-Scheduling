@@ -67,33 +67,33 @@ if __name__ == "__main__":
 
     pc = ParserController("Roster.xlsx", "30-SEP", "2024 First Half")
     
-    # print("All employees:")
-    # print(pc.getAllEmployees())
+    print("All employees:")
+    print(pc.getAllEmployees())
 
-    # # for driver in pc.drivers:
-    # #     print(driver)
-    # print("Available employees:")
-    # driver_id_list = pc.getAvailableEmployees(datetime(2024, 10, 1))
-    # # for driver in pc.drivers:
-    # #     print(driver)
+    # for driver in pc.drivers:
+    #     print(driver)
+    print("Available employees:")
+    driver_id_list = pc.getAvailableEmployees(datetime(2024, 10, 1))
+    # for driver in pc.drivers:
+    #     print(driver)
 
-    # print("Shifts:")
-    # shifts = pc.getShiftsFromWeeklyTemplate("Monday")
-    # # for shift in shifts:
-    # #     print(shift)
+    print("Shifts:")
+    shifts = pc.getShiftsFromWeeklyTemplate("Tuesday")
+    # for shift in shifts:
+    #     print(shift)
 
-    # print("Monthly date range:")
-    # print(pc.getMonthlyDateRange())
+    print("Monthly date range:")
+    print(pc.getMonthlyDateRange())
 
     print("Day has been processed:")
     print(pc.dayHasBeenProcessed(datetime(2024, 9, 30)))
 
-    # shift_id_list = [shifts[0].id]
-    # result = {}
-    # i = 0
-    # for shift_id in shift_id_list:
-    #     result[shift_id] = driver_id_list[i]
-    #     i += 1
-    # print("Result:")
-    # pc.writeToMonthlyRoster(result)
+    shift_id_list = [shifts[0].id]
+    result = {}
+    i = 0
+    for shift_id in shift_id_list:
+        result[shift_id] = driver_id_list[i]
+        i += 1
+    print("Result:")
+    pc.writeToMonthlyRoster(result)
 
