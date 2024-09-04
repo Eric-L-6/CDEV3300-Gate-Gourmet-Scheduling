@@ -56,6 +56,7 @@ class Controller:
         title = "Info"
         message = f"""
 Updated '{self.monthly_roster} > {self.roster_sheet}'.
+
 Created the following daily rosters in 'Outputs/{monthly_roster_dir}':
 {daily_roster_str}
 """
