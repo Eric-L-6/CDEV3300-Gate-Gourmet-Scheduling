@@ -36,17 +36,13 @@ class Controller:
             solver = MaxBipartiteGraphSolver(all_employees, available_employees, required_shifts)
             success, results = solver.solve()
 
+            print("Calculation Results:")
+            print(results)
+
             # write to new daily schedule and monthly roster
             daily_schedule_filename = f"{day} {date.strftime("%d-%m-%Y")}.xlsx"
             monthly_roster_dir = f"{os.path.splitext(self.monthly_roster)[0]} {self.roster_sheet}"
             
-            # check if monthly roster dir exists
-            # if not exists: create dir
-            # copy daily template for the day to dir named as daily_schedule_filename
-            #   overwrite if exists
-            # do same thing as writetomonthlyroster
-            #   if a list - write list to the cell and change cell backgroun colour to eg yellow
-
             pc.writeToNewDailySchedule(results, monthly_roster_dir, daily_schedule_filename)
             pc.writeToMonthlyRoster(results, success)
 
@@ -80,7 +76,7 @@ Created the following daily rosters in 'Outputs/{monthly_roster_dir}':
         
         else:
             title = "Warning"
-            message = f"Conflict occured in '{created_daily_rosters[-1]}'. Please manually resolve this issue.\nUpdate the Monthly Roster '{self.monthly_roster}' before running the program again."
+            message = f"Conflict occured in '{created_daily_rosters[-1]}'.\n\nPlease manually resolve this issue.\n\nUpdate the Monthly Roster '{self.monthly_roster}' before running the program again."
             messagebox.showerror(title, message)
 
         return success
