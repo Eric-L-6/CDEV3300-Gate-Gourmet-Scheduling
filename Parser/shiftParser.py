@@ -4,9 +4,11 @@ from datetime import datetime
 from Helpers.shifts import Shift
 
 class ShiftParser():
-    def shiftInitialise(filename):
+    def shiftInitialise(filename, workbook_path = None):
         # load the workbook and select the active sheet
-        workbook_path = os.path.join(os.getcwd(), "Input Data", filename)
+        if not workbook_path:
+            workbook_path = os.path.join(os.getcwd(), "Input Data", filename)
+
         wb = openpyxl.load_workbook(workbook_path)
         ws = wb.active
         shifts = []
