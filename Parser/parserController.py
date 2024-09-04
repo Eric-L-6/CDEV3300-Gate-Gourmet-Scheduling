@@ -58,8 +58,8 @@ class ParserController:
     def writeToNewDailySchedule(self, result:list, path:str, daily_schedule_filename:str):
         ShiftParser.writeToNewDailySchedule(result, path, daily_schedule_filename)
 
-    def writeToMonthlyRoster(self, result:list): 
-        self.rp.writeToMonthlyRoster(result, self.employees, self.shifts)
+    def writeToMonthlyRoster(self, result:list, success:bool): 
+        self.rp.writeToMonthlyRoster(result, success, self.employees, self.shifts)
     
 
 if __name__ == "__main__":
@@ -95,5 +95,5 @@ if __name__ == "__main__":
         result[shift_id] = driver_id_list[i]
         i += 1
     print("Result:")
-    pc.writeToMonthlyRoster(result)
+    pc.writeToMonthlyRoster(result, False)
 

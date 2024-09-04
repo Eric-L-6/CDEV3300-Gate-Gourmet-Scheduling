@@ -205,15 +205,18 @@ class RosterParser():
         else:
             return hours + minutes / 60.0
 
-    def writeToMonthlyRoster(self, result:list, employees:dict, shifts:dict):
+    def writeToMonthlyRoster(self, result:list, success:bool, employees:dict, shifts:dict):
         # result = {s1.id: e1.id, s2: e4.id, s3.id: [e2.id, e3.id]}
         # Write the result to the monthly roster
 
         print("Employees:")
         print(employees)
 
-
         for shift_id, employee_id in result.items():
+            # no available employees found
+            if type(employee_id) == list:
+                continue
+
             # Get the shift and employee objects
             shift = shifts[shift_id]
             employee = employees[employee_id]
@@ -229,6 +232,7 @@ class RosterParser():
             end_time = self.convert_datetime_to_reading(shift.end_time)
             self.writing(row, col, value=f"{start_time}-{end_time}", fill_color="FFFFC000")
 
+        if success:
             # Mark the cell as processed
             self.writing(3, col, value=self.processed_slot, fill_color="FF00B050")
 
