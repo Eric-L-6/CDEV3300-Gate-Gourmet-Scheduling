@@ -1,37 +1,36 @@
 import os
-import pandas as pd
+import openpyxl
 from Helpers.drivers import Driver
 
 num_skill = 19
 offset = 2
-index_column_table = []
 
 class DriverParser():
     def driverInitialise(file_path: str):
         drivers = []
 
-        if not os.path.isfile(file_path):
-            print(f"File not found: {file_path}")
-        else:
-            df = pd.ExcelFile(file_path).parse('Team member list') 
-            for i in range(0, len(df.columns)):
-                index_column_table.append((df.columns[i]))
-            skill_set = df.columns[offset: offset + num_skill].tolist()
-            for i in range(0, len(df)):
-                # skip if the first column is empty
-                if pd.isnull(df.iloc[i, 0]):
-                    continue
-                # break if the first column is not a number or is empty
-                if not isinstance(df.iloc[i, 0], int):
-                    break
-                # create a driver if the first column is not empty
-                if not pd.isnull(df.iloc[i, 0]):
-                    driver = Driver(df.iloc[i].tolist(), skill_set, index_column_table)
-                    drivers.append(driver)
+        # read the excel file
+        workbook_path = os.path.join(os.getcwd(),"Input Data", file_path)
+        wb = openpyxl.load_workbook(workbook_path)
+        ws = wb['Team member list']
+
+        skillset = []
+        for i in range(3, ws.max_column + 1):
+            if (ws.cell(row=1, column=i).value == "Total point"):
+                break
+            skillset.append(ws.cell(row=1, column=i).value)
+
+        for i in range(2, ws.max_row + 1):
+            if ws.cell(row=i, column=1).value is not None and type(ws.cell(row=i, column=1).value) != int:
+                break
+            if ws.cell(row=i, column=1).value is not None:
+                # print(ws.cell(row=i, column=1).value)
+                driver_info = []
+                for j in range(1, num_skill + 3):
+                    driver_info.append(ws.cell(row=i, column=j).value)
+                driver = Driver(driver_info, skillset)
+                drivers.append(driver)
+
+                # print(driver)
 
         return drivers
-
-if __name__ == "__main__":
-    drivers = DriverParser.driverInitialise(os.path.join(os.getcwd(), "Input Data", "skill_M.xlsx"))
-    for driver in drivers:
-        print(driver)

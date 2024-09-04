@@ -6,7 +6,7 @@ from datetime import datetime
 class ParserController:
     def __init__(self):
         self.drivers = DriverParser.driverInitialise("skill_M.xlsx")
-        self.shifts = ShiftParser.shiftInitialise("daily_M.xlsx")
+        self.shifts = ShiftParser.shiftInitialise("2024 first half.xlsx")
 
     def getAllEmployees(self):
         employees = {}
@@ -15,7 +15,7 @@ class ParserController:
         return employees
     
     def getAvailableEmployees(self, date:datetime):
-        rp = RosterParser("roaster_M.xlsx")
+        rp = RosterParser("roster_M.xlsx")
         return rp.getAvailableDrivers(date, self.drivers)
     
     def getShifts(self):
@@ -24,9 +24,9 @@ class ParserController:
 
 if __name__ == "__main__":
     pc = ParserController()
-    # print("All employees:")
-    # print(pc.getAllEmployees())
-    print("Available employees:")
-    print(pc.getAvailableEmployees(datetime(2024, 10, 1)))
+    print("All employees:")
+    print(pc.getAllEmployees())
+    # print("Available employees:")
+    # print(pc.getAvailableEmployees(datetime(2024, 10, 1)))
     # print("Shifts:")
     # print(pc.getShifts())
