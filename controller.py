@@ -94,8 +94,6 @@ Created the following daily rosters in 'Outputs/{monthly_roster_dir}':
     
     def openDailyRoster(self, monthly_roster_dir, daily_schedule_filename):
         file_path = os.path.join(OUTPUT_PATH, monthly_roster_dir, daily_schedule_filename)
-        messagebox.showwarning("Daily", f"Filepath: {file_path}")
-        print(file_path)
         self.openFileForUser(file_path)
 
     def openFileForUser(self, file_path):
