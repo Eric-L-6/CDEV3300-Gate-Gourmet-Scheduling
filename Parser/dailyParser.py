@@ -30,14 +30,11 @@ class DailyParser():
         # result = {s1.id: e1.id, s2: e4.id, s3.id: [e2.id, e3.id]}
         # Write the result to the daily schedule
         # check if monthly roaster dir exists
-        if not os.path.exists(os.path.join(OUTPUT_PATH, monthly_roster_dir)):
-            # if not exisit: create dir
-            os.mkdir(os.path.join(OUTPUT_PATH, monthly_roster_dir))
+        full_monthly_roster_dir = os.path.join(OUTPUT_PATH, monthly_roster_dir)
+        os.makedirs(full_monthly_roster_dir, exist_ok=True)
 
-        monthly_roster_dir = os.path.join(OUTPUT_PATH, monthly_roster_dir)
-        # copy daily template for the day to dir named as daily_schedule _filename
-        # overwrite if already exists
-        daily_schedule_path = os.path.join(monthly_roster_dir, daily_schedule_filename)
+        # Define the full path for daily schedule
+        daily_schedule_path = os.path.join(full_monthly_roster_dir, daily_schedule_filename)
 
         
         
