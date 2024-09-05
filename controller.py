@@ -1,3 +1,5 @@
+import subprocess
+import platform
 from constants import *
 from datetime import datetime, timedelta
 from tkinter import messagebox
@@ -68,6 +70,7 @@ Created the following daily rosters in 'Outputs/{monthly_roster_dir}':
             title = "Caution"
             message = f"Please check if the allocation for the first day of the month '{created_daily_rosters[-1]}' is valid before running the program again.\n\nCheck if the rostered drivers have at least 12 hours between shifts in the previous month.\n\nIf there are conflicts, please manually resolve and update both '{created_daily_rosters[-1]}' and '{self.monthly_roster}'"
             messagebox.showwarning(title, message)
+            self.openDailyRoster(monthly_roster_dir, created_daily_rosters[-1])
 
         # showinfo
         elif success:
@@ -80,9 +83,29 @@ Created the following daily rosters in 'Outputs/{monthly_roster_dir}':
             title = "Warning"
             message = f"Conflict occured in '{created_daily_rosters[-1]}'.\n\nPlease manually resolve this issue.\n\nUpdate the Monthly Roster '{self.monthly_roster}' before running the program again."
             messagebox.showerror(title, message)
+            self.openDailyRoster(monthly_roster_dir, created_daily_rosters[-1])
 
+        self.openMonthlyRoster()
         return success
 
+    def openMonthlyRoster(self):
+        file_path = os.path.join(MONTHLY_ROSTERS_PATH, self.monthly_roster)
+        self.openFileForUser(file_path)
+    
+    def openDailyRoster(self, monthly_roster_dir, daily_schedule_filename):
+        file_path = os.path.join(OUTPUT_PATH, monthly_roster_dir, daily_schedule_filename)
+        messagebox.showwarning("Daily", f"Filepath: {file_path}")
+        print(file_path)
+        self.openFileForUser(file_path)
+
+    def openFileForUser(self, file_path):
+        current_os = platform.system()
+        if current_os == 'Windows':
+            # Open the file on Windows
+             subprocess.run(['cmd', '/c', 'start', '', file_path], check=True)
+        elif current_os == 'Darwin':
+            # Open the file on macOS
+            subprocess.Popen(['open', file_path])
 
     
     # need to: 
